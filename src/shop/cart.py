@@ -24,6 +24,7 @@ class Cart:
             raise ValueError("price must be non-negative")
         if qty <= 0:
             raise ValueError("qty must be positive")
+
         if name in self._items:
             self._items[name].qty += qty
         else:
@@ -32,6 +33,7 @@ class Cart:
     def remove(self, name: str) -> None:
         if name not in self._items:
             raise KeyError(name)
+
         del self._items[name]
 
     def items_count(self) -> int:
@@ -40,11 +42,21 @@ class Cart:
     def total(self, discount_percent: float = 0) -> float:
         if not 0 <= discount_percent <= 100:
             raise ValueError("discount_percent must be in [0, 100]")
+
         subtotal = sum(item.price * item.qty for item in self._items.values())
         return round(subtotal * (1 - discount_percent / 100), 2)
 
     def total_in(self, currency: str, rates: RateProvider) -> float:
         rate = rates.get_rate(currency)
+
         if rate <= 0:
             raise ValueError("rate must be positive")
+
         return round(self.total() / rate, 2)
+
+    def most_expensive(self) -> Item | None:
+        if not self._items:
+            return None
+
+        return max(self._items.values(), key=lambda item: item.price)
+
