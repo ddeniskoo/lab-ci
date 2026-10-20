@@ -59,3 +59,6 @@ class Cart:
             return None
 
         return max(self._items.values(), key=lambda item: item.price)
+
+    def format_total(self) -> str:
+        return self.total()
