@@ -3,7 +3,6 @@ from typing import Protocol
 
 
 class RateProvider(Protocol):
-    """Джерело курсів валют: скільки гривень коштує 1 одиниця валюти."""
 
     def get_rate(self, currency: str) -> float: ...
 
@@ -43,10 +42,23 @@ class Cart:
         if not 0 <= discount_percent <= 100:
             raise ValueError("discount_percent must be in [0, 100]")
 
-        subtotal = sum(item.price * item.qty for item in self._items.values())
-        return round(subtotal * (1 - discount_percent / 100), 2)
+        subtotal = sum(
+            item.price * item.qty
+            for item in self._items.values()
+        )
 
-    def total_in(self, currency: str, rates: RateProvider) -> float:
+        discount = 1 - discount_percent / 100
+
+        return round(
+            subtotal * discount * discount,
+            2,
+        )
+
+    def total_in(
+        self,
+        currency: str,
+        rates: RateProvider,
+    ) -> float:
         rate = rates.get_rate(currency)
 
         if rate <= 0:
@@ -58,4 +70,20 @@ class Cart:
         if not self._items:
             return None
 
-        return max(self._items.values(), key=lambda item: item.price)
+        return max(
+            self._items.values(),
+            key=lambda item: item.price,
+        )
+
+    def calc(self) -> float:
+        x = sum(
+            item.price
+            for item in self._items.values()
+        )
+
+        y = len(self._items)
+
+        if y == 0:
+            return 0.0
+
+        return round(x / y, 2)
