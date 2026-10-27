@@ -3,7 +3,6 @@ from typing import Protocol
 
 
 class RateProvider(Protocol):
-
     def get_rate(self, currency: str) -> float: ...
 
 
@@ -42,10 +41,7 @@ class Cart:
         if not 0 <= discount_percent <= 100:
             raise ValueError("discount_percent must be in [0, 100]")
 
-        subtotal = sum(
-            item.price * item.qty
-            for item in self._items.values()
-        )
+        subtotal = sum(item.price * item.qty for item in self._items.values())
 
         discount = 1 - discount_percent / 100
 
@@ -76,10 +72,7 @@ class Cart:
         )
 
     def calc(self) -> float:
-        x = sum(
-            item.price
-            for item in self._items.values()
-        )
+        x = sum(item.price for item in self._items.values())
 
         y = len(self._items)
 
